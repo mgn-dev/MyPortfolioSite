@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --page-bg: #f5f5f5;
+  --card-bg: #ffffff;
+  --border-subtle: #e8e8e8;
+  --muted: #666666;
+  --heading: #000000;
+  --input-bg: #f0f0f0;
+  --btn-bg: #000000;
+  --btn-fg: #ffffff;
+  --btn-outline-border: #000000;
+  --pill-active-bg: #000000;
+  --pill-active-fg: #ffffff;
+  --pill-idle-fg: #737373;
+  --placeholder-shade: #d4d4d4;
+}
+
+.dark {
+  --page-bg: #0d0d0d;
+  --card-bg: #1a1a1a;
+  --border-subtle: #2e2e2e;
+  --muted: #888888;
+  --heading: #ffffff;
+  --input-bg: #252525;
+  --btn-bg: #ffffff;
+  --btn-fg: #000000;
+  --btn-outline-border: #ffffff;
+  --pill-active-bg: #ffffff;
+  --pill-active-fg: #000000;
+  --pill-idle-fg: #a3a3a3;
+  --placeholder-shade: #404040;
+}
+
+@theme inline {
+  --color-page: var(--page-bg);
+  --color-card: var(--card-bg);
+  --color-border-subtle: var(--border-subtle);
+  --color-muted: var(--muted);
+  --color-heading: var(--heading);
+  --color-input: var(--input-bg);
+  --color-btn: var(--btn-bg);
+  --color-btn-fg: var(--btn-fg);
+  --color-btn-outline-border: var(--btn-outline-border);
+  --color-pill-active-bg: var(--pill-active-bg);
+  --color-pill-active-fg: var(--pill-active-fg);
+  --color-pill-idle-fg: var(--pill-idle-fg);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background-color: var(--page-bg);
+  color: var(--heading);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+html.dark body {
+  background-image: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.06) 1px,
+    transparent 1px
+  );
+  background-size: 22px 22px;
+}
