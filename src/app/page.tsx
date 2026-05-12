@@ -1,6 +1,7 @@
 import { ContactBlock } from "@/components/portfolio/contact-block";
 import { SiteFooter } from "@/components/portfolio/site-footer";
 import { AccordionItem } from "@/components/portfolio/accordion-item";
+import { AccordionStack } from "@/components/portfolio/accordion-stack";
 import { AboutContent } from "@/components/portfolio/about-content";
 import { ProjectsContent } from "@/components/portfolio/projects-content";
 import { TopHeader } from "@/components/portfolio/top-header";
@@ -12,7 +13,7 @@ export default function Home() {
         <TopHeader />
         <div className="mt-6 border-t border-border-subtle" />
 
-        <div className="my-auto space-y-2 py-8">
+        <AccordionStack className="space-y-2 py-8">
           <AccordionItem id="about" label="ABOUT">
             <AboutContent />
           </AccordionItem>
@@ -24,7 +25,7 @@ export default function Home() {
           <AccordionItem id="contact" label="CONTACT">
             <ContactBlock />
           </AccordionItem>
-        </div>
+        </AccordionStack>
 
         <SiteFooter />
       </main>
