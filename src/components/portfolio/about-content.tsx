@@ -13,4 +13,3 @@ export function AboutContent() {
     </div>
   );
 }
-

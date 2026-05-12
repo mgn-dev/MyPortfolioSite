@@ -4,13 +4,12 @@ import { AccordionItem } from "@/components/portfolio/accordion-item";
 import { AccordionStack } from "@/components/portfolio/accordion-stack";
 import { AboutContent } from "@/components/portfolio/about-content";
 import { ProjectsContent } from "@/components/portfolio/projects-content";
-import { ThemeToggle } from "@/components/portfolio/theme-toggle";
 import { TopHeader } from "@/components/portfolio/top-header";
 
 export default function Home() {
   return (
-    <div className="relative flex min-h-full flex-1 flex-col bg-page">
-      <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-4 pb-16 pt-2 sm:px-6 sm:pt-4">
+    <div className="relative flex min-h-dvh flex-1 flex-col bg-page">
+      <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-4 pb-8 pt-2 sm:px-6 sm:pb-10 sm:pt-4">
         <TopHeader />
         <div className="mt-6 border-t border-border-subtle" />
 
@@ -19,7 +18,7 @@ export default function Home() {
             <AboutContent />
           </AccordionItem>
 
-          <AccordionItem id="projects" label="PROJECTS">
+          <AccordionItem id="projects" label="PROJECTS" contentReveal="none">
             <ProjectsContent />
           </AccordionItem>
 
@@ -27,13 +26,9 @@ export default function Home() {
             <ContactBlock />
           </AccordionItem>
         </AccordionStack>
-
-        <SiteFooter />
       </main>
 
-      <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
-        <ThemeToggle />
-      </div>
+      <SiteFooter />
     </div>
   );
 }

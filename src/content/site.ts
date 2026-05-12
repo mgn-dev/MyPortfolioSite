@@ -20,10 +20,10 @@ export type SiteProject = {
 };
 
 export const site = {
-  name: "Alex Morgan",
-  role: "Designer & Front-end developer",
+  name: "Mojalefa Gideon Nkwana",
+  role: "Software | Cybersecurity",
   bio: "I craft calm, readable interfaces and ship thoughtful web experiences. Currently freelancing and exploring creative tooling.",
-  initials: "AM",
+  initials: "MN",
   socials: [
     { href: "https://twitter.com", label: "X / Twitter", icon: "twitter" },
     { href: "https://youtube.com", label: "YouTube", icon: "youtube" },

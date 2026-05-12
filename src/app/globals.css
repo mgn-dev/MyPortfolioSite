@@ -47,14 +47,20 @@
   --color-pill-active-bg: var(--pill-active-bg);
   --color-pill-active-fg: var(--pill-active-fg);
   --color-pill-idle-fg: var(--pill-idle-fg);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-montserrat);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
   background-color: var(--page-bg);
   color: var(--heading);
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  overflow-x: clip;
 }
 
 html.dark body {
@@ -64,4 +70,14 @@ html.dark body {
     transparent 1px
   );
   background-size: 22px 22px;
+}
+
+/** Horizontal social strip on small screens */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }
