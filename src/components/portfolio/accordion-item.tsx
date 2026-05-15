@@ -12,7 +12,7 @@ import {
   type ReactNode,
 } from "react";
 
-/** Panel height / chevron; keep in sync with `transitionMs` below. */
+/** Panel height / chevron; keep in sync with the WAAPI call below. */
 export const ACCORDION_TRANSITION_MS = 500;
 
 const EASE = "cubic-bezier(0.33, 1, 0.68, 1)";
@@ -40,6 +40,15 @@ export function useAccordionPanel() {
   return useContext(AccordionPanelContext);
 }
 
+function readCurrentPx(panel: HTMLElement, inner: HTMLElement): number {
+  const computed = getComputedStyle(panel).maxHeight;
+  if (computed === "none" || computed === "auto" || computed === "") {
+    return inner.scrollHeight;
+  }
+  const parsed = parseFloat(computed);
+  return Number.isFinite(parsed) ? parsed : inner.scrollHeight;
+}
+
 export function AccordionItem({
   id,
   label,
@@ -54,12 +63,10 @@ export function AccordionItem({
   contentReveal?: "fade" | "none";
 }) {
   const [open, setOpen] = useState(false);
-  const [panelMaxPx, setPanelMaxPx] = useState(0);
+  const panelRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<Animation | null>(null);
   const wasOpenRef = useRef(false);
-  const openRafRef = useRef(0);
-  const closeRafRef = useRef(0);
-  const resizeObserverRef = useRef<ResizeObserver | null>(null);
 
   const reducedMotion = useSyncExternalStore(
     subscribeReducedMotion,
@@ -75,78 +82,92 @@ export function AccordionItem({
     });
   }, [onToggle]);
 
+  // Drive the panel height with WAAPI instead of CSS transitions on
+  // `max-height`. iOS Safari frame-coalesces around touch events and
+  // frequently fails to engage `transition: max-height` from 0 → measured
+  // height, snapping the panel open with no animation. WAAPI bypasses the
+  // render→paint→transition pipeline entirely and animates identically on
+  // desktop and iOS Safari.
   useLayoutEffect(() => {
-    const el = innerRef.current;
-    if (!el) return;
+    const panel = panelRef.current;
+    const inner = innerRef.current;
+    if (!panel || !inner) return;
 
-    cancelAnimationFrame(openRafRef.current);
-    cancelAnimationFrame(closeRafRef.current);
-    resizeObserverRef.current?.disconnect();
-    resizeObserverRef.current = null;
+    // Preserve the current visual position when interrupting an in-flight
+    // animation (rapid toggle).
+    const currentPx = readCurrentPx(panel, inner);
+    if (animationRef.current) {
+      panel.style.maxHeight = `${currentPx}px`;
+      animationRef.current.cancel();
+      animationRef.current = null;
+    }
 
-    const measure = () => el.scrollHeight;
+    if (reducedMotion) {
+      panel.style.maxHeight = open ? "none" : "0px";
+      wasOpenRef.current = open;
+      return;
+    }
 
     if (open) {
+      const targetPx = inner.scrollHeight;
+      panel.style.maxHeight = `${currentPx}px`;
+      const anim = panel.animate(
+        [
+          { maxHeight: `${currentPx}px` },
+          { maxHeight: `${targetPx}px` },
+        ],
+        {
+          duration: ACCORDION_TRANSITION_MS,
+          easing: EASE,
+          fill: "both",
+        },
+      );
+      animationRef.current = anim;
+      anim.onfinish = () => {
+        // Release the cap so dynamic content (images loading, etc.) can
+        // grow naturally while the panel is open.
+        panel.style.maxHeight = "none";
+        anim.cancel();
+        if (animationRef.current === anim) animationRef.current = null;
+      };
       wasOpenRef.current = true;
 
-      if (reducedMotion) {
-        setPanelMaxPx(measure());
-        resizeObserverRef.current = new ResizeObserver(() =>
-          setPanelMaxPx(measure()),
-        );
-        resizeObserverRef.current.observe(el);
-        return () => {
-          resizeObserverRef.current?.disconnect();
-          resizeObserverRef.current = null;
-        };
-      }
-
-      // Let the browser paint max-height: 0 once, then apply the real height so
-      // `transition: max-height` actually runs (desktop + iOS).
-      setPanelMaxPx(0);
-      openRafRef.current = requestAnimationFrame(() => {
-        setPanelMaxPx(measure());
-        resizeObserverRef.current = new ResizeObserver(() =>
-          setPanelMaxPx(measure()),
-        );
-        resizeObserverRef.current.observe(el);
-      });
-
       return () => {
-        cancelAnimationFrame(openRafRef.current);
-        resizeObserverRef.current?.disconnect();
-        resizeObserverRef.current = null;
+        if (animationRef.current === anim) animationRef.current = null;
+        anim.cancel();
       };
     }
 
-    if (wasOpenRef.current) {
-      const h = measure();
-      setPanelMaxPx(h);
-      if (reducedMotion) {
-        setPanelMaxPx(0);
-      } else {
-        closeRafRef.current = requestAnimationFrame(() => {
-          closeRafRef.current = requestAnimationFrame(() => {
-            setPanelMaxPx(0);
-          });
-        });
-      }
-    } else {
-      setPanelMaxPx(0);
+    if (!wasOpenRef.current) {
+      panel.style.maxHeight = "0px";
+      return;
     }
+
+    panel.style.maxHeight = `${currentPx}px`;
+    const anim = panel.animate(
+      [
+        { maxHeight: `${currentPx}px` },
+        { maxHeight: "0px" },
+      ],
+      {
+        duration: ACCORDION_TRANSITION_MS,
+        easing: EASE,
+        fill: "both",
+      },
+    );
+    animationRef.current = anim;
+    anim.onfinish = () => {
+      panel.style.maxHeight = "0px";
+      anim.cancel();
+      if (animationRef.current === anim) animationRef.current = null;
+    };
     wasOpenRef.current = false;
 
     return () => {
-      cancelAnimationFrame(closeRafRef.current);
+      if (animationRef.current === anim) animationRef.current = null;
+      anim.cancel();
     };
   }, [open, reducedMotion]);
-
-  const panelStyle = {
-    maxHeight: panelMaxPx,
-    transition: reducedMotion
-      ? "none"
-      : `max-height ${ACCORDION_TRANSITION_MS}ms ${EASE}`,
-  } as const;
 
   return (
     <div className="border-b border-border-subtle bg-transparent">
@@ -167,7 +188,7 @@ export function AccordionItem({
           aria-hidden
         />
       </button>
-      <div className="overflow-hidden" style={panelStyle}>
+      <div ref={panelRef} className="overflow-hidden" style={{ maxHeight: 0 }}>
         <div ref={innerRef} className="min-h-0">
           <AccordionPanelContext.Provider
             value={{ open, transitionMs: ACCORDION_TRANSITION_MS }}
