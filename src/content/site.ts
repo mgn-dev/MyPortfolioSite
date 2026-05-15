@@ -11,12 +11,28 @@ export type SiteSocial = {
   icon: SocialIconName;
 };
 
+export type ProjectStatus = "live" | "staging";
+export type ProjectInvolvement = "gen-ai" | "human" | "both";
+
 export type SiteProject = {
   title: string;
-  description: string;
-  url: string;
+  tech: string;
+  status: ProjectStatus;
+  involvement: ProjectInvolvement;
+  githubUrl?: string;
+  imageSrc?: string;
+  url?: string;
+  description?: string;
   /** Subtle gradient tint on placeholder artwork */
-  accent: string;
+  accent?: string;
+};
+
+export type ProjectGroupId = "software-engineering" | "cybersecurity";
+
+export type SiteProjectGroup = {
+  id: ProjectGroupId;
+  label: string;
+  projects: SiteProject[];
 };
 
 export const site = {
@@ -30,27 +46,50 @@ export const site = {
     { href: "https://linkedin.com", label: "LinkedIn", icon: "linkedin" },
     { href: "https://github.com", label: "GitHub", icon: "github" },
   ] satisfies SiteSocial[],
-  projects: [
+  projectGroups: [
     {
-      title: "Northwind Studio",
-      description:
-        "Brand and marketing site for a small product studio—typography-led layouts and a modular component system.",
-      url: "#",
-      accent: "#6366f1",
+      id: "software-engineering",
+      label: "SOFTWARE ENGINEERING",
+      projects: [
+        {
+          title: "Northwind Studio",
+          tech: "Next.js",
+          status: "live",
+          involvement: "human",
+          githubUrl: "#",
+          description:
+            "Brand and marketing site for a small product studio—typography-led layouts and a modular component system.",
+          url: "#",
+          accent: "#6366f1",
+        },
+        {
+          title: "Ledgerbooks",
+          tech: "React",
+          status: "live",
+          involvement: "both",
+          githubUrl: "#",
+          description:
+            "SaaS dashboard UI exploration focused on dense data, keyboard flows, and accessible charts.",
+          url: "#",
+          accent: "#0ea5e9",
+        },
+        {
+          title: "Atlas Reader",
+          tech: "TypeScript",
+          status: "staging",
+          involvement: "gen-ai",
+          githubUrl: "#",
+          description:
+            "Minimal reading app marketing page with fluid type scales and a restrained monochrome palette.",
+          url: "#",
+          accent: "#22c55e",
+        },
+      ],
     },
     {
-      title: "Ledgerbooks",
-      description:
-        "SaaS dashboard UI exploration focused on dense data, keyboard flows, and accessible charts.",
-      url: "#",
-      accent: "#0ea5e9",
+      id: "cybersecurity",
+      label: "CYBERSECURITY",
+      projects: [],
     },
-    {
-      title: "Atlas Reader",
-      description:
-        "Minimal reading app marketing page with fluid type scales and a restrained monochrome palette.",
-      url: "#",
-      accent: "#22c55e",
-    },
-  ] satisfies SiteProject[],
+  ] satisfies SiteProjectGroup[],
 };

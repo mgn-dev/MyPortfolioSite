@@ -60,7 +60,7 @@ body {
   background-color: var(--page-bg);
   color: var(--heading);
   font-family: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
-  overflow-x: clip;
+  overflow-x: hidden;
 }
 
 html.dark body {
@@ -80,4 +80,27 @@ html.dark body {
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/**
+ * Break out of max-w-2xl main, then center a max-w-6xl grid in the viewport.
+ * Outer strip spans the viewport; inner grid is margin-auto centered.
+ */
+.projects-cards-bleed {
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .projects-cards-bleed {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+  }
+
+  .projects-cards-grid {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: min(72rem, calc(100vw - 3rem));
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+  }
 }

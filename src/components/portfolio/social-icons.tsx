@@ -37,7 +37,7 @@ function LinkedinIcon({ className }: { className?: string }) {
   );
 }
 
-function GithubIcon({ className }: { className?: string }) {
+export function GithubIcon({ className }: { className?: string }) {
   return (
     <svg {...iconProps(className)}>
       <path
