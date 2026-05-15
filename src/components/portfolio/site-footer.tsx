@@ -73,7 +73,7 @@ export function SiteFooter() {
             </div>
           </div>
           <p className="w-full text-balance text-center text-[11px] font-medium uppercase tracking-[0.12em] text-muted sm:text-left">
-            © {year} MGN.
+            © {year} MADE BY MGN.
           </p>
         </div>
       </footer>
