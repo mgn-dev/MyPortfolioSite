@@ -21,7 +21,7 @@ function ProjectGroupCards({
 
   return (
     <div className="projects-cards-bleed">
-      <div className="projects-cards-grid grid min-w-0 grid-cols-1 gap-6 sm:grid-cols-3 sm:gap-8">
+      <div className="projects-cards-grid">
         {projects.map((project, i) => (
           <ProjectCard
             key={project.title}

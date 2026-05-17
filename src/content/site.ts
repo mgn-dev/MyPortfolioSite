@@ -16,7 +16,8 @@ export type ProjectInvolvement = "gen-ai" | "human" | "both";
 
 export type SiteProject = {
   title: string;
-  tech: string;
+  /** Technologies used in the project (shown in order). */
+  techStack: string[];
   status: ProjectStatus;
   involvement: ProjectInvolvement;
   githubUrl?: string;
@@ -53,7 +54,7 @@ export const site = {
       projects: [
         {
           title: "Northwind Studio",
-          tech: "Next.js",
+          techStack: ["Next.js", "React", "TypeScript", "Tailwind CSS"],
           status: "live",
           involvement: "human",
           githubUrl: "#",
@@ -64,7 +65,7 @@ export const site = {
         },
         {
           title: "Ledgerbooks",
-          tech: "React",
+          techStack: ["React", "TypeScript", "TanStack Query", "Tailwind CSS", "Radix UI"],
           status: "live",
           involvement: "both",
           githubUrl: "#",
@@ -75,7 +76,7 @@ export const site = {
         },
         {
           title: "Atlas Reader",
-          tech: "TypeScript",
+          techStack: ["TypeScript", "React", "Vite", "CSS"],
           status: "staging",
           involvement: "gen-ai",
           githubUrl: "#",

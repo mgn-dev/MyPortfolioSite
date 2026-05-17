@@ -83,11 +83,35 @@ html.dark body {
 }
 
 /**
- * Break out of max-w-2xl main, then center a max-w-6xl grid in the viewport.
+ * Break out of max-w-2xl main, then center a grid in the viewport.
  * Outer strip spans the viewport; inner grid is margin-auto centered.
+ *
+ * Responsive grid: prefers wrapping to fewer columns (min column width ~19rem)
+ * rather than shrinking cards below that width once past the sm breakpoint.
+ * Uses auto-fit (not auto-fill) so extra column slots collapse when widening with
+ * fewer items—cards absorb free space instead of sharing it with ghost columns.
  */
 .projects-cards-bleed {
   width: 100%;
+}
+
+.projects-cards-grid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+/**
+ * Match max width of one column when the grid hits its widest 3-across layout
+ * (container max-width 78rem − 3rem horizontal padding − two 2rem gutters, ÷ 3).
+ * Prevents oversized cards on ultra-wide screens or sparse rows; keeps within track on narrow widths.
+ */
+.projects-cards-grid > article {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: min(calc(71rem / 3), 100%);
+  justify-self: center;
 }
 
 @media (min-width: 640px) {
@@ -99,8 +123,10 @@ html.dark body {
   .projects-cards-grid {
     box-sizing: border-box;
     width: 100%;
-    max-width: min(72rem, calc(100vw - 3rem));
+    max-width: min(78rem, calc(100vw - 3rem));
     margin-inline: auto;
     padding-inline: 1.5rem;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
   }
 }

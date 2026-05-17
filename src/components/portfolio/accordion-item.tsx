@@ -194,7 +194,7 @@ export function AccordionItem({
       );
       animationRef.current = anim;
 
-      let readyTimer: ReturnType<typeof setTimeout> | undefined;
+      let readyTimer: number | undefined;
       if (earlyChildReveal) {
         readyTimer = window.setTimeout(() => {
           setContentReady(true);

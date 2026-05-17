@@ -8,36 +8,80 @@ const STATUS_LABEL: Record<SiteProject["status"], string> = {
   staging: "Staging",
 };
 
-function InvolvementPill({ involvement }: { involvement: ProjectInvolvement }) {
-  const genAiActive = involvement === "gen-ai" || involvement === "both";
-  const humanActive = involvement === "human" || involvement === "both";
+/** Shared accent color for involvement pills across all projects. */
+const INVOLVEMENT_PILL_ACCENT = "#0ea5e9";
+
+/**
+ * Inactive halves of InvolvementPill and the thumbnail status capsule use the same greys
+ * (`#d9d9d9` light / `#404040` dark) so chips read as one system.
+ */
+const INVOLVEMENT_GREY_SURFACE_CLASS =
+  "bg-[#d9d9d9]/65 text-white dark:bg-[#404040]/65";
+
+/** Subtle elevation for pills and thumbnail status capsule (tone with ProjectCard shadows). */
+const CHIP_SHADOW_CLASS =
+  "shadow-[0_2px_10px_rgba(0,0,0,0.07)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.32)]";
+
+/** Staging status dot — warm orange beside Live pill blue (INVOLVEMENT_PILL_ACCENT). */
+const STAGING_DOT = "#fb923c";
+
+function InvolvementPill({
+  involvement,
+}: {
+  involvement: ProjectInvolvement;
+}) {
+  const accentColor = INVOLVEMENT_PILL_ACCENT;
+
+  const ariaLabel =
+    involvement === "both"
+      ? "Gen AI and Human"
+      : involvement === "gen-ai"
+        ? "Gen AI"
+        : "Human";
+
+  const shellClass =
+    `inline-flex shrink-0 overflow-hidden rounded-full text-[10px] font-semibold leading-none tracking-wide ${CHIP_SHADOW_CLASS}`;
+
+  if (involvement === "both") {
+    return (
+      <div
+        className={`${shellClass} text-white`}
+        style={{ backgroundColor: accentColor }}
+        aria-label={ariaLabel}
+      >
+        <span className="px-1.5 py-0.5">Gen AI</span>
+        <span
+          className="w-px shrink-0 self-stretch bg-white/25"
+          aria-hidden
+        />
+        <span className="px-1.5 py-0.5">Human</span>
+      </div>
+    );
+  }
 
   return (
-    <div
-      className="inline-flex shrink-0 overflow-hidden rounded-full text-[11px] font-medium tracking-wide"
-      aria-label={
-        involvement === "both"
-          ? "Gen AI and Human"
-          : involvement === "gen-ai"
-            ? "Gen AI"
-            : "Human"
-      }
-    >
+    <div className={shellClass} aria-label={ariaLabel}>
       <span
-        className={`px-2.5 py-1 ${
-          genAiActive
-            ? "bg-[#b0b0b0] text-white dark:bg-[#6b7280]"
-            : "bg-[#d9d9d9] text-white dark:bg-[#404040]"
+        className={`px-1.5 py-0.5 text-white ${
+          involvement === "human" ? INVOLVEMENT_GREY_SURFACE_CLASS : ""
         }`}
+        style={
+          involvement === "gen-ai"
+            ? { backgroundColor: accentColor }
+            : undefined
+        }
       >
         Gen AI
       </span>
       <span
-        className={`px-2.5 py-1 ${
-          humanActive
-            ? "bg-[#9ca3af] text-white dark:bg-[#525252]"
-            : "bg-[#d9d9d9] text-white dark:bg-[#404040]"
+        className={`px-1.5 py-0.5 text-white ${
+          involvement === "gen-ai" ? INVOLVEMENT_GREY_SURFACE_CLASS : ""
         }`}
+        style={
+          involvement === "human"
+            ? { backgroundColor: accentColor }
+            : undefined
+        }
       >
         Human
       </span>
@@ -88,7 +132,17 @@ export function ProjectCard({
         style={{ backgroundColor: "var(--placeholder-shade)" }}
         aria-hidden={!project.imageSrc}
       >
-        <p className="absolute right-3 top-3 z-10 text-xs font-medium text-muted">
+        <p
+          className={`absolute right-3 top-3 z-10 flex items-center gap-2 rounded-full pl-2.5 pr-3 py-1 text-xs font-semibold ${INVOLVEMENT_GREY_SURFACE_CLASS} ${CHIP_SHADOW_CLASS}`}
+        >
+          <span
+            className="size-1.5 shrink-0 rounded-full"
+            style={{
+              backgroundColor:
+                project.status === "live" ? INVOLVEMENT_PILL_ACCENT : STAGING_DOT,
+            }}
+            aria-hidden
+          />
           {STATUS_LABEL[project.status]}
         </p>
 
@@ -121,15 +175,19 @@ export function ProjectCard({
 
       <div className="mt-5 space-y-3">
         <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
-          <h3 className="text-pretty text-lg font-semibold leading-snug tracking-tight text-heading sm:text-xl">
+          <h3 className="min-w-0 text-pretty text-lg font-semibold leading-snug tracking-tight text-heading sm:text-xl">
             {project.title}
           </h3>
-          <InvolvementPill involvement={project.involvement} />
+          <div className="w-fit shrink-0">
+            <InvolvementPill involvement={project.involvement} />
+          </div>
         </div>
 
         <div className="flex items-center justify-between gap-3">
-          <p className="text-sm text-muted">{project.tech}</p>
-          {project.githubUrl ? (
+          <p className="min-w-0 flex-1 text-pretty text-[13px] leading-snug text-muted">
+            {project.techStack.join(" · ")}
+          </p>
+          {project.status !== "live" && project.githubUrl ? (
             <a
               href={project.githubUrl}
               className="inline-flex shrink-0 touch-manipulation text-heading transition-opacity hover:opacity-70"
