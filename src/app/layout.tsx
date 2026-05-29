@@ -35,12 +35,9 @@ const themeScript = `
   try {
     var k = 'portfolio-theme';
     var v = localStorage.getItem(k);
-    var dark = false;
-    if (v === 'dark') dark = true;
-    else if (v === 'light') dark = false;
-    else dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    document.documentElement.classList.toggle('dark', dark);
-    document.documentElement.setAttribute('data-theme-pref', v || 'system');
+    var pref = v === 'dark' ? 'dark' : 'light';
+    document.documentElement.classList.toggle('dark', pref === 'dark');
+    document.documentElement.setAttribute('data-theme-pref', pref);
   } catch (e) {}
 })();
 `;
