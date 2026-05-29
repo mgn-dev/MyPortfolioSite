@@ -2,7 +2,7 @@
 
 import { AccordionItem, useAccordionPanel } from "@/components/portfolio/accordion-item";
 import { ProjectCard } from "@/components/portfolio/project-card";
-import { site } from "@/content/site";
+import type { SiteContent, SiteProjectGroup } from "@/lib/pocketbase";
 
 /** Stagger card reveals after the panel is ready (keep tight — panel already eases in). */
 const STAGGER_BASE_MS = 32;
@@ -11,7 +11,7 @@ const STAGGER_STEP_MS = 64;
 function ProjectGroupCards({
   projects,
 }: {
-  projects: (typeof site.projectGroups)[number]["projects"];
+  projects: SiteProjectGroup["projects"];
 }) {
   const { open, contentReady } = useAccordionPanel();
 
@@ -38,10 +38,14 @@ function ProjectGroupCards({
   );
 }
 
-export function ProjectsContent() {
+export function ProjectsContent({
+  projectGroups,
+}: {
+  projectGroups: SiteContent["projectGroups"];
+}) {
   return (
     <>
-      {site.projectGroups.map((group) => (
+      {projectGroups.map((group) => (
         <AccordionItem
           key={group.id}
           id={`projects-${group.id}`}

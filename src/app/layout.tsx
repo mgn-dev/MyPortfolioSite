@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Montserrat } from "next/font/google";
+import { getSiteContent } from "@/lib/pocketbase";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -12,11 +13,13 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Alex Morgan — Portfolio",
-  description:
-    "Minimal portfolio — design, front-end development, and selected projects.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await getSiteContent();
+  return {
+    title: `${site.name} — Portfolio`,
+    description: site.bio,
+  };
+}
 
 export const viewport: Viewport = {
   width: "device-width",

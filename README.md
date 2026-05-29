@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is a [Next.js](https://nextjs.org) portfolio site. Content is loaded from [PocketBase](https://pocketbase.io) when configured, with a static fallback in `src/content/site.ts`.
+
+## PocketBase (Dokploy)
+
+1. Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_POCKETBASE_URL` to your PocketBase API base URL (HTTPS, no trailing slash).
+2. Bootstrap collections and seed data (admin credentials only — not used by the app):
+
+```bash
+POCKETBASE_URL=https://your-pocketbase.example.com \
+POCKETBASE_ADMIN_EMAIL=you@example.com \
+POCKETBASE_ADMIN_PASSWORD=your-admin-password \
+npm run setup:pocketbase
+```
+
+If the server uses a temporary/self-signed TLS certificate, add `POCKETBASE_INSECURE_SKIP_TLS=true` for the setup command only.
+
+3. Edit content in the PocketBase admin UI (`/_/`) under **site_profile**, **socials**, and **projects**.
+4. Upload **profileImage** on `site_profile` and optional **image** on each project.
+
+### Dokploy checklist
+
+**PocketBase compose**
+
+- Domain: HTTPS enabled (Let's Encrypt).
+- **Isolated deployment:** off (or add `traefik.docker.network=<appName>` to the service).
+- After changing domains, redeploy the compose stack.
+
+**PocketBase CORS** (Settings → API in `/_/`)
+
+- Add your portfolio site origin, e.g. `https://your-portfolio-domain.example.com`.
+- For local dev, add `http://localhost:3000`.
+
+**Portfolio Next.js app** (new Dokploy application)
+
+- Build: `npm run build` / Start: `npm run start` (or Nixpacks).
+- Environment:
+  - `NEXT_PUBLIC_POCKETBASE_URL` — same public HTTPS URL as above
+  - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` — for the contact form
+
+**Contact form**
+
+- Recipient email is read from `site_profile.contactEmail` in PocketBase (not from the form).
+- WhatsApp number is read from `site_profile.contactWhatsapp` and shown as a `wa.me` link.
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+cp .env.example .env.local
+# edit .env.local
+
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Collections
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Collection     | Purpose |
+|----------------|---------|
+| `site_profile` | Name, role, bio, initials, profile image, contact email & WhatsApp |
+| `socials`      | Social links (sort order) |
+| `projects`     | Project cards (`category`: `software-engineering` or `cybersecurity`) |
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Next.js Documentation](https://nextjs.org/docs)
+- [PocketBase Documentation](https://pocketbase.io/docs/)

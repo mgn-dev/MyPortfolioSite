@@ -1,0 +1,330 @@
+/**
+ * Bootstrap PocketBase collections, API rules, and seed data for the portfolio site.
+ *
+ * Usage:
+ *   POCKETBASE_URL=https://your-pb.example.com \
+ *   POCKETBASE_ADMIN_EMAIL=admin@example.com \
+ *   POCKETBASE_ADMIN_PASSWORD=secret \
+ *   npm run setup:pocketbase
+ */
+
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+const PB_URL = (process.env.POCKETBASE_URL || process.env.NEXT_PUBLIC_POCKETBASE_URL || "")
+  .replace(/\/$/, "");
+const ADMIN_EMAIL = process.env.POCKETBASE_ADMIN_EMAIL;
+const ADMIN_PASSWORD = process.env.POCKETBASE_ADMIN_PASSWORD;
+
+if (!PB_URL || !ADMIN_EMAIL || !ADMIN_PASSWORD) {
+  console.error(
+    "Missing env. Set POCKETBASE_URL, POCKETBASE_ADMIN_EMAIL, POCKETBASE_ADMIN_PASSWORD",
+  );
+  process.exit(1);
+}
+
+const seed = JSON.parse(
+  readFileSync(join(__dirname, "seed-site.json"), "utf8"),
+);
+
+async function pbFetch(path, options = {}) {
+  const fetchOptions = {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
+  };
+
+  if (process.env.POCKETBASE_INSECURE_SKIP_TLS === "true") {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+  }
+
+  let res;
+  try {
+    res = await fetch(`${PB_URL}${path}`, fetchOptions);
+  } catch (err) {
+    const hint =
+      process.env.POCKETBASE_INSECURE_SKIP_TLS === "true"
+        ? ""
+        : " (try POCKETBASE_INSECURE_SKIP_TLS=true if the server uses a self-signed certificate)";
+    throw new Error(`${err.message}${hint}`);
+  }
+  const text = await res.text();
+  let body;
+  try {
+    body = text ? JSON.parse(text) : null;
+  } catch {
+    body = text;
+  }
+  if (!res.ok) {
+    const msg =
+      typeof body === "object" && body?.message
+        ? body.message
+        : text || res.statusText;
+    throw new Error(`${options.method || "GET"} ${path} → ${res.status}: ${msg}`);
+  }
+  return body;
+}
+
+async function authenticate() {
+  // PocketBase v0.23+ uses _superusers instead of legacy /api/admins
+  const paths = [
+    "/api/collections/_superusers/auth-with-password",
+    "/api/admins/auth-with-password",
+  ];
+
+  let lastError;
+  for (const path of paths) {
+    try {
+      const data = await pbFetch(path, {
+        method: "POST",
+        body: JSON.stringify({
+          identity: ADMIN_EMAIL,
+          password: ADMIN_PASSWORD,
+        }),
+      });
+      if (data?.token) {
+        return `Bearer ${data.token}`;
+      }
+    } catch (err) {
+      lastError = err;
+    }
+  }
+
+  throw lastError ?? new Error("Authentication failed");
+}
+
+const PUBLIC_RULES = {
+  listRule: "",
+  viewRule: "",
+  createRule: null,
+  updateRule: null,
+  deleteRule: null,
+};
+
+const ICON_VALUES = ["twitter", "youtube", "linkedin", "github", "instagram"];
+const STATUS_VALUES = ["live", "staging"];
+const INVOLVEMENT_VALUES = ["gen-ai", "human", "both"];
+const CATEGORY_VALUES = ["software-engineering", "cybersecurity"];
+
+const COLLECTIONS = [
+  {
+    name: "site_profile",
+    type: "base",
+    fields: [
+      { name: "name", type: "text", required: true },
+      { name: "role", type: "text", required: false },
+      { name: "bio", type: "text", required: false },
+      { name: "initials", type: "text", required: false },
+      {
+        name: "profileImage",
+        type: "file",
+        required: false,
+        maxSelect: 1,
+        maxSize: 5242880,
+        mimeTypes: ["image/jpeg", "image/png", "image/webp", "image/gif"],
+      },
+      { name: "contactEmail", type: "email", required: false },
+      { name: "contactWhatsapp", type: "text", required: false },
+    ],
+    ...PUBLIC_RULES,
+  },
+  {
+    name: "socials",
+    type: "base",
+    fields: [
+      { name: "href", type: "url", required: true },
+      { name: "label", type: "text", required: true },
+      {
+        name: "icon",
+        type: "select",
+        required: true,
+        maxSelect: 1,
+        values: ICON_VALUES,
+      },
+      { name: "sort", type: "number", required: false },
+    ],
+    ...PUBLIC_RULES,
+  },
+  {
+    name: "projects",
+    type: "base",
+    fields: [
+      { name: "title", type: "text", required: true },
+      { name: "techStack", type: "json", required: false },
+      {
+        name: "status",
+        type: "select",
+        required: true,
+        maxSelect: 1,
+        values: STATUS_VALUES,
+      },
+      {
+        name: "involvement",
+        type: "select",
+        required: true,
+        maxSelect: 1,
+        values: INVOLVEMENT_VALUES,
+      },
+      { name: "githubUrl", type: "url", required: false },
+      { name: "url", type: "url", required: false },
+      { name: "description", type: "text", required: false },
+      { name: "accent", type: "text", required: false },
+      {
+        name: "image",
+        type: "file",
+        required: false,
+        maxSelect: 1,
+        maxSize: 5242880,
+        mimeTypes: ["image/jpeg", "image/png", "image/webp", "image/gif"],
+      },
+      {
+        name: "category",
+        type: "select",
+        required: true,
+        maxSelect: 1,
+        values: CATEGORY_VALUES,
+      },
+      { name: "sort", type: "number", required: false },
+    ],
+    ...PUBLIC_RULES,
+  },
+];
+
+async function listCollections(token) {
+  return pbFetch("/api/collections?perPage=200", {
+    headers: { Authorization: token },
+  });
+}
+
+async function ensureCollection(token, spec) {
+  const existing = await listCollections(token);
+  const found = existing.items?.find((c) => c.name === spec.name);
+
+  const payload = {
+    name: spec.name,
+    type: spec.type,
+    fields: spec.fields,
+    listRule: spec.listRule,
+    viewRule: spec.viewRule,
+    createRule: spec.createRule,
+    updateRule: spec.updateRule,
+    deleteRule: spec.deleteRule,
+  };
+
+  if (found) {
+    console.log(`  ↻ update collection: ${spec.name}`);
+    await pbFetch(`/api/collections/${found.id}`, {
+      method: "PATCH",
+      headers: { Authorization: token },
+      body: JSON.stringify({ ...payload, fields: undefined }),
+    });
+    // Patch fields separately when collection exists (PB merges field defs)
+    await pbFetch(`/api/collections/${found.id}`, {
+      method: "PATCH",
+      headers: { Authorization: token },
+      body: JSON.stringify({ fields: spec.fields }),
+    });
+    return found.name;
+  }
+
+  console.log(`  + create collection: ${spec.name}`);
+  await pbFetch("/api/collections", {
+    method: "POST",
+    headers: { Authorization: token },
+    body: JSON.stringify(payload),
+  });
+  return spec.name;
+}
+
+async function listRecords(token, collection, filter = "") {
+  const q = new URLSearchParams({ perPage: 500 });
+  if (filter) q.set("filter", filter);
+  const data = await pbFetch(`/api/collections/${collection}/records?${q}`, {
+    headers: { Authorization: token },
+  });
+  return data.items || [];
+}
+
+async function seedSiteProfile(token) {
+  const existing = await listRecords(token, "site_profile");
+  const body = seed.site_profile;
+
+  if (existing.length > 0) {
+    console.log("  ↻ update site_profile");
+    await pbFetch(`/api/collections/site_profile/records/${existing[0].id}`, {
+      method: "PATCH",
+      headers: { Authorization: token },
+      body: JSON.stringify(body),
+    });
+    return;
+  }
+
+  console.log("  + create site_profile");
+  await pbFetch("/api/collections/site_profile/records", {
+    method: "POST",
+    headers: { Authorization: token },
+    body: JSON.stringify(body),
+  });
+}
+
+async function seedSocials(token) {
+  const existing = await listRecords(token, "socials");
+  if (existing.length > 0) {
+    console.log(`  · socials already seeded (${existing.length} records)`);
+    return;
+  }
+
+  for (const row of seed.socials) {
+    await pbFetch("/api/collections/socials/records", {
+      method: "POST",
+      headers: { Authorization: token },
+      body: JSON.stringify(row),
+    });
+  }
+  console.log(`  + seeded ${seed.socials.length} socials`);
+}
+
+async function seedProjects(token) {
+  const existing = await listRecords(token, "projects");
+  if (existing.length > 0) {
+    console.log(`  · projects already seeded (${existing.length} records)`);
+    return;
+  }
+
+  for (const row of seed.projects) {
+    await pbFetch("/api/collections/projects/records", {
+      method: "POST",
+      headers: { Authorization: token },
+      body: JSON.stringify(row),
+    });
+  }
+  console.log(`  + seeded ${seed.projects.length} projects`);
+}
+
+async function main() {
+  console.log(`PocketBase: ${PB_URL}`);
+  console.log("Authenticating…");
+  const token = await authenticate();
+
+  console.log("Collections:");
+  for (const spec of COLLECTIONS) {
+    await ensureCollection(token, spec);
+  }
+
+  console.log("Seed data:");
+  await seedSiteProfile(token);
+  await seedSocials(token);
+  await seedProjects(token);
+
+  console.log("\nDone. Edit content at " + PB_URL + "/_/");
+}
+
+main().catch((err) => {
+  console.error(err.message || err);
+  process.exit(1);
+});

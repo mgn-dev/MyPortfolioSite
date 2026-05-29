@@ -1,6 +1,6 @@
-import { site } from "@/content/site";
+import type { SiteContent } from "@/lib/pocketbase";
 
-export function AboutContent() {
+export function AboutContent({ site }: { site: SiteContent }) {
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-semibold tracking-tight text-heading">

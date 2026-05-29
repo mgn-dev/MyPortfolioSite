@@ -5,17 +5,23 @@ import { AccordionStack } from "@/components/portfolio/accordion-stack";
 import { AboutContent } from "@/components/portfolio/about-content";
 import { ProjectsContent } from "@/components/portfolio/projects-content";
 import { TopHeader } from "@/components/portfolio/top-header";
+import { getSiteContent } from "@/lib/pocketbase";
 
-export default function Home() {
+/** Re-fetch portfolio content from PocketBase periodically (ISR). */
+export const revalidate = 60;
+
+export default async function Home() {
+  const site = await getSiteContent();
+
   return (
     <div className="relative flex min-h-dvh flex-1 flex-col bg-page">
       <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col overflow-x-visible px-4 pb-8 pt-2 sm:px-6 sm:pb-10 sm:pt-4">
-        <TopHeader />
+        <TopHeader site={site} />
         <div className="mt-6 border-t border-border-subtle" />
 
         <AccordionStack className="space-y-2 py-8">
           <AccordionItem id="about" label="ABOUT">
-            <AboutContent />
+            <AboutContent site={site} />
           </AccordionItem>
 
           <AccordionItem
@@ -24,11 +30,14 @@ export default function Home() {
             contentReveal="none"
             allowDescendantBleed
           >
-            <ProjectsContent />
+            <ProjectsContent projectGroups={site.projectGroups} />
           </AccordionItem>
 
           <AccordionItem id="contact" label="CONTACT">
-            <ContactBlock />
+            <ContactBlock
+              contactEmail={site.contactEmail}
+              contactWhatsapp={site.contactWhatsapp}
+            />
           </AccordionItem>
         </AccordionStack>
       </main>

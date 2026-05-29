@@ -1,10 +1,60 @@
 "use client";
 
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
+import { whatsappUrl } from "@/lib/whatsapp";
 
-export function ContactBlock() {
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+type ContactBlockProps = {
+  contactEmail?: string;
+  contactWhatsapp?: string;
+};
+
+type FormStatus = "idle" | "sending" | "success" | "error";
+
+export function ContactBlock({
+  contactEmail,
+  contactWhatsapp,
+}: ContactBlockProps) {
+  const [status, setStatus] = useState<FormStatus>("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const waLink = whatsappUrl(contactWhatsapp);
+
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setStatus("sending");
+    setErrorMessage(null);
+
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    const payload = {
+      name: String(data.get("name") ?? "").trim(),
+      email: String(data.get("email") ?? "").trim(),
+      message: String(data.get("message") ?? "").trim(),
+    };
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const body = (await res.json().catch(() => ({}))) as {
+        error?: string;
+      };
+
+      if (!res.ok) {
+        setStatus("error");
+        setErrorMessage(body.error ?? "Something went wrong. Please try again.");
+        return;
+      }
+
+      setStatus("success");
+      form.reset();
+    } catch {
+      setStatus("error");
+      setErrorMessage("Network error. Please try again.");
+    }
   }
 
   return (
@@ -12,6 +62,36 @@ export function ContactBlock() {
       <p className="text-sm text-muted">
         Have a question or a project in mind? Say hello.
       </p>
+
+      {(contactEmail || waLink) && (
+        <ul className="flex flex-col gap-2 text-sm">
+          {contactEmail && (
+            <li>
+              <span className="text-muted">Email: </span>
+              <a
+                href={`mailto:${contactEmail}`}
+                className="font-medium text-heading underline-offset-2 hover:underline"
+              >
+                {contactEmail}
+              </a>
+            </li>
+          )}
+          {waLink && contactWhatsapp && (
+            <li>
+              <span className="text-muted">WhatsApp: </span>
+              <a
+                href={waLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-heading underline-offset-2 hover:underline"
+              >
+                {contactWhatsapp}
+              </a>
+            </li>
+          )}
+        </ul>
+      )}
+
       <form className="space-y-4" onSubmit={onSubmit}>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
@@ -23,8 +103,10 @@ export function ContactBlock() {
               name="name"
               type="text"
               autoComplete="name"
+              required
+              disabled={status === "sending"}
               placeholder="Your name"
-              className="min-h-12 w-full rounded-2xl border border-transparent bg-input px-4 text-heading placeholder:text-muted outline-none focus:border-border-subtle focus:ring-2 focus:ring-heading/15 dark:focus:ring-white/15"
+              className="min-h-12 w-full rounded-2xl border border-transparent bg-input px-4 text-heading placeholder:text-muted outline-none focus:border-border-subtle focus:ring-2 focus:ring-heading/15 disabled:opacity-60 dark:focus:ring-white/15"
             />
           </div>
           <div className="space-y-2">
@@ -36,8 +118,10 @@ export function ContactBlock() {
               name="email"
               type="email"
               autoComplete="email"
+              required
+              disabled={status === "sending"}
               placeholder="Your email"
-              className="min-h-12 w-full rounded-2xl border border-transparent bg-input px-4 text-heading placeholder:text-muted outline-none focus:border-border-subtle focus:ring-2 focus:ring-heading/15 dark:focus:ring-white/15"
+              className="min-h-12 w-full rounded-2xl border border-transparent bg-input px-4 text-heading placeholder:text-muted outline-none focus:border-border-subtle focus:ring-2 focus:ring-heading/15 disabled:opacity-60 dark:focus:ring-white/15"
             />
           </div>
         </div>
@@ -49,15 +133,30 @@ export function ContactBlock() {
             id="contact-message"
             name="message"
             rows={4}
+            required
+            disabled={status === "sending"}
             placeholder="Your message"
-            className="w-full resize-y rounded-2xl border border-transparent bg-input px-4 py-3 text-heading placeholder:text-muted outline-none focus:border-border-subtle focus:ring-2 focus:ring-heading/15 dark:focus:ring-white/15"
+            className="w-full resize-y rounded-2xl border border-transparent bg-input px-4 py-3 text-heading placeholder:text-muted outline-none focus:border-border-subtle focus:ring-2 focus:ring-heading/15 disabled:opacity-60 dark:focus:ring-white/15"
           />
         </div>
+
+        {status === "success" && (
+          <p className="text-sm text-heading" role="status">
+            Thanks — your message was sent.
+          </p>
+        )}
+        {status === "error" && errorMessage && (
+          <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+            {errorMessage}
+          </p>
+        )}
+
         <button
           type="submit"
-          className="min-h-12 w-full rounded-2xl bg-btn text-sm font-medium text-btn-fg transition-opacity hover:opacity-90 sm:w-auto sm:px-10"
+          disabled={status === "sending"}
+          className="min-h-12 w-full rounded-2xl bg-btn text-sm font-medium text-btn-fg transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:px-10"
         >
-          Send message
+          {status === "sending" ? "Sending…" : "Send message"}
         </button>
       </form>
     </div>

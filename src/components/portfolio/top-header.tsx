@@ -1,18 +1,53 @@
+import Image from "next/image";
 import { Camera } from "lucide-react";
 import { SocialIcon } from "@/components/portfolio/social-icons";
-import { site } from "@/content/site";
+import type { SiteContent } from "@/lib/pocketbase";
 
-export function TopHeader() {
+function ProfileAvatar({ site }: { site: SiteContent }) {
+  const className =
+    "relative flex size-14 shrink-0 overflow-hidden rounded-full bg-input text-heading shadow-sm ring-1 ring-border-subtle sm:size-20";
+
+  if (site.profileImageUrl) {
+    return (
+      <div className={className}>
+        <Image
+          src={site.profileImageUrl}
+          alt=""
+          fill
+          className="object-cover"
+          sizes="80px"
+          priority
+        />
+      </div>
+    );
+  }
+
+  if (site.initials) {
+    return (
+      <div
+        className={`${className} items-center justify-center text-sm font-semibold tracking-wide sm:text-base`}
+        aria-hidden
+      >
+        {site.initials}
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={`${className} items-center justify-center`}
+      aria-hidden
+    >
+      <Camera className="size-7 sm:size-9" strokeWidth={1.75} />
+    </div>
+  );
+}
+
+export function TopHeader({ site }: { site: SiteContent }) {
   return (
     <header className="flex flex-col gap-4 pb-2 pt-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-1 sm:pt-5">
       <div className="flex min-w-0 items-center gap-3 sm:gap-4">
-        <button
-          type="button"
-          aria-label="Profile picture"
-          className="flex size-14 shrink-0 touch-manipulation items-center justify-center rounded-full bg-input text-heading shadow-sm ring-1 ring-border-subtle sm:size-20"
-        >
-          <Camera className="size-7 sm:size-9" strokeWidth={1.75} aria-hidden />
-        </button>
+        <ProfileAvatar site={site} />
         <div className="min-w-0 flex-1">
           <p className="text-balance text-xs font-semibold uppercase tracking-[0.14em] text-heading sm:text-[12px] sm:tracking-[0.16em]">
             {site.name}

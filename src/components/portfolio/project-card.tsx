@@ -18,10 +18,6 @@ const INVOLVEMENT_PILL_ACCENT = "#0ea5e9";
 const INVOLVEMENT_GREY_SURFACE_CLASS =
   "bg-[#d9d9d9]/65 text-white dark:bg-[#404040]/65";
 
-/** Subtle elevation for pills and thumbnail status capsule (tone with ProjectCard shadows). */
-const CHIP_SHADOW_CLASS =
-  "shadow-[0_2px_10px_rgba(0,0,0,0.07)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.32)]";
-
 /** Staging status dot — warm orange beside Live pill blue (INVOLVEMENT_PILL_ACCENT). */
 const STAGING_DOT = "#fb923c";
 
@@ -40,7 +36,7 @@ function InvolvementPill({
         : "Human";
 
   const shellClass =
-    `inline-flex shrink-0 overflow-hidden rounded-full text-[10px] font-semibold leading-none tracking-wide ${CHIP_SHADOW_CLASS}`;
+    "inline-flex shrink-0 overflow-hidden rounded-full text-[10px] font-semibold leading-none tracking-wide";
 
   if (involvement === "both") {
     return (
@@ -124,16 +120,16 @@ export function ProjectCard({
 
   return (
     <article
-      className={`flex min-w-0 flex-col rounded-[2rem] bg-card p-5 shadow-[0_4px_24px_rgba(0,0,0,0.06)] sm:rounded-[2.5rem] sm:p-6 dark:shadow-[0_4px_24px_rgba(0,0,0,0.35)] ${revealClasses} ${reveal ? "transform-gpu" : ""}`}
+      className={`flex min-w-0 flex-col border border-border-subtle bg-card ${revealClasses} ${reveal ? "transform-gpu" : ""}`}
       style={revealStyle}
     >
       <div
-        className="relative aspect-[5/4] w-full overflow-hidden rounded-2xl"
+        className="relative aspect-[5/4] w-full overflow-hidden border-b border-border-subtle"
         style={{ backgroundColor: "var(--placeholder-shade)" }}
         aria-hidden={!project.imageSrc}
       >
         <p
-          className={`absolute right-3 top-3 z-10 flex items-center gap-2 rounded-full pl-2.5 pr-3 py-1 text-xs font-semibold ${INVOLVEMENT_GREY_SURFACE_CLASS} ${CHIP_SHADOW_CLASS}`}
+          className={`absolute right-3 top-3 z-10 flex items-center gap-2 rounded-full pl-2.5 pr-3 py-1 text-xs font-semibold ${INVOLVEMENT_GREY_SURFACE_CLASS}`}
         >
           <span
             className="size-1.5 shrink-0 rounded-full"
@@ -173,7 +169,7 @@ export function ProjectCard({
         )}
       </div>
 
-      <div className="mt-5 space-y-3">
+      <div className="space-y-3 p-4 sm:p-5">
         <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
           <h3 className="min-w-0 text-pretty text-lg font-semibold leading-snug tracking-tight text-heading sm:text-xl">
             {project.title}

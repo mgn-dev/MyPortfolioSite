@@ -1,0 +1,54 @@
+{
+  "site_profile": {
+    "name": "Mojalefa Gideon Nkwana",
+    "role": "Software | Cybersecurity",
+    "bio": "I craft calm, readable interfaces and ship thoughtful web experiences. Currently freelancing and exploring creative tooling.",
+    "initials": "MN",
+    "contactEmail": "hello@example.com",
+    "contactWhatsapp": "+27123456789"
+  },
+  "socials": [
+    { "href": "https://twitter.com", "label": "X / Twitter", "icon": "twitter", "sort": 1 },
+    { "href": "https://youtube.com", "label": "YouTube", "icon": "youtube", "sort": 2 },
+    { "href": "https://linkedin.com", "label": "LinkedIn", "icon": "linkedin", "sort": 3 },
+    { "href": "https://github.com", "label": "GitHub", "icon": "github", "sort": 4 }
+  ],
+  "projects": [
+    {
+      "title": "Northwind Studio",
+      "techStack": ["Next.js", "React", "TypeScript", "Tailwind CSS"],
+      "status": "live",
+      "involvement": "human",
+      "githubUrl": "#",
+      "description": "Brand and marketing site for a small product studio—typography-led layouts and a modular component system.",
+      "url": "#",
+      "accent": "#6366f1",
+      "category": "software-engineering",
+      "sort": 1
+    },
+    {
+      "title": "Ledgerbooks",
+      "techStack": ["React", "TypeScript", "TanStack Query", "Tailwind CSS", "Radix UI"],
+      "status": "live",
+      "involvement": "both",
+      "githubUrl": "#",
+      "description": "SaaS dashboard UI exploration focused on dense data, keyboard flows, and accessible charts.",
+      "url": "#",
+      "accent": "#0ea5e9",
+      "category": "software-engineering",
+      "sort": 2
+    },
+    {
+      "title": "Atlas Reader",
+      "techStack": ["TypeScript", "React", "Vite", "CSS"],
+      "status": "staging",
+      "involvement": "gen-ai",
+      "githubUrl": "#",
+      "description": "Minimal reading app marketing page with fluid type scales and a restrained monochrome palette.",
+      "url": "#",
+      "accent": "#22c55e",
+      "category": "software-engineering",
+      "sort": 3
+    }
+  ]
+}
