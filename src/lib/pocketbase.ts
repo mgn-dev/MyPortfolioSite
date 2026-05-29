@@ -122,9 +122,7 @@ async function pbGetList<T>(
 
   const res = await fetch(
     `${baseUrl}/api/collections/${collection}/records?${params}`,
-    {
-      next: { revalidate: 60 },
-    },
+    { cache: "no-store" },
   );
 
   if (!res.ok) {

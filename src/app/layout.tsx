@@ -3,6 +3,8 @@ import { JetBrains_Mono, Montserrat } from "next/font/google";
 import { getSiteContent } from "@/lib/pocketbase";
 import "./globals.css";
 
+export const dynamic = "force-dynamic";
+
 const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],

@@ -7,8 +7,8 @@ import { ProjectsContent } from "@/components/portfolio/projects-content";
 import { TopHeader } from "@/components/portfolio/top-header";
 import { getSiteContent } from "@/lib/pocketbase";
 
-/** Re-fetch portfolio content from PocketBase periodically (ISR). */
-export const revalidate = 60;
+/** Always read latest PocketBase content (no stale CMS cache). */
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const site = await getSiteContent();
