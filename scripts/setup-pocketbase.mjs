@@ -291,19 +291,52 @@ async function seedSocials(token) {
 
 async function seedProjects(token) {
   const existing = await listRecords(token, "projects");
-  if (existing.length > 0) {
-    console.log(`  · projects already seeded (${existing.length} records)`);
+
+  if (existing.length === 0) {
+    for (const row of seed.projects) {
+      await pbFetch("/api/collections/projects/records", {
+        method: "POST",
+        headers: { Authorization: token },
+        body: JSON.stringify(row),
+      });
+    }
+    console.log(`  + seeded ${seed.projects.length} projects`);
     return;
   }
 
+  const byTitle = new Map(existing.map((row) => [row.title, row]));
+  let updated = 0;
+
   for (const row of seed.projects) {
-    await pbFetch("/api/collections/projects/records", {
-      method: "POST",
+    const record = byTitle.get(row.title);
+    if (!record) continue;
+
+    const needsUpdate =
+      !record.category ||
+      record.category !== row.category ||
+      JSON.stringify(record.techStack ?? []) !== JSON.stringify(row.techStack ?? []);
+
+    if (!needsUpdate) continue;
+
+    await pbFetch(`/api/collections/projects/records/${record.id}`, {
+      method: "PATCH",
       headers: { Authorization: token },
-      body: JSON.stringify(row),
+      body: JSON.stringify({
+        category: row.category,
+        techStack: row.techStack,
+        status: row.status,
+        involvement: row.involvement,
+        sort: row.sort,
+      }),
     });
+    updated += 1;
   }
-  console.log(`  + seeded ${seed.projects.length} projects`);
+
+  console.log(
+    updated > 0
+      ? `  ↻ updated ${updated} project(s)`
+      : `  · projects already seeded (${existing.length} records)`,
+  );
 }
 
 async function main() {

@@ -33,10 +33,7 @@ const GROUP_LABELS: Record<ProjectGroupId, string> = {
   cybersecurity: "CYBERSECURITY",
 };
 
-const GROUP_ORDER: ProjectGroupId[] = [
-  "software-engineering",
-  "cybersecurity",
-];
+const GROUP_ORDER: ProjectGroupId[] = ["software-engineering", "cybersecurity"];
 
 type PbFileField = string;
 
@@ -79,9 +76,18 @@ type PbListResponse<T> = {
   items: T[];
 };
 
-function getBaseUrl(): string | undefined {
-  const url = process.env.NEXT_PUBLIC_POCKETBASE_URL?.replace(/\/$/, "");
+/** Server-side API base (prefer internal HTTP URL in Docker). */
+function getServerBaseUrl(): string | undefined {
+  const url = (
+    process.env.POCKETBASE_URL || process.env.NEXT_PUBLIC_POCKETBASE_URL
+  )?.replace(/\/$/, "");
   return url || undefined;
+}
+
+/** Public base for file URLs shown in the browser. */
+function getPublicBaseUrl(): string | undefined {
+  const url = process.env.NEXT_PUBLIC_POCKETBASE_URL?.replace(/\/$/, "");
+  return url || getServerBaseUrl();
 }
 
 export function fileUrl(
@@ -114,9 +120,12 @@ async function pbGetList<T>(
   const params = new URLSearchParams({ perPage: "500" });
   if (sort) params.set("sort", sort);
 
-  const res = await fetch(`${baseUrl}/api/collections/${collection}/records?${params}`, {
-    next: { revalidate: 60 },
-  });
+  const res = await fetch(
+    `${baseUrl}/api/collections/${collection}/records?${params}`,
+    {
+      next: { revalidate: 60 },
+    },
+  );
 
   if (!res.ok) {
     throw new Error(`PocketBase ${collection}: ${res.status}`);
@@ -150,9 +159,7 @@ function buildProjectGroups(
     byCategory.set(id, []);
   }
 
-  const sorted = [...projects].sort(
-    (a, b) => (a.sort ?? 0) - (b.sort ?? 0),
-  );
+  const sorted = [...projects].sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0));
 
   for (const row of sorted) {
     const list = byCategory.get(row.category);
@@ -167,22 +174,25 @@ function buildProjectGroups(
 }
 
 export async function getSiteContent(): Promise<SiteContent> {
-  const baseUrl = getBaseUrl();
-  if (!baseUrl) {
+  const serverUrl = getServerBaseUrl();
+  const publicUrl = getPublicBaseUrl();
+  if (!serverUrl || !publicUrl) {
     return staticFallback();
   }
 
   try {
     const [profiles, socials, projects] = await Promise.all([
-      pbGetList<PbSiteProfile>(baseUrl, "site_profile"),
-      pbGetList<PbSocial & { id: string }>(baseUrl, "socials", "sort"),
-      pbGetList<PbProject>(baseUrl, "projects", "sort"),
+      pbGetList<PbSiteProfile>(serverUrl, "site_profile"),
+      pbGetList<PbSocial & { id: string }>(serverUrl, "socials", "sort"),
+      pbGetList<PbProject>(serverUrl, "projects", "sort"),
     ]);
 
     const profile = profiles[0];
 
     if (!profile) {
-      console.warn("[pocketbase] No site_profile record; using static fallback");
+      console.warn(
+        "[pocketbase] No site_profile record; using static fallback",
+      );
       return staticFallback();
     }
 
@@ -191,7 +201,7 @@ export async function getSiteContent(): Promise<SiteContent> {
       role: profile.role ?? staticSite.role,
       bio: profile.bio ?? staticSite.bio,
       initials: profile.initials ?? staticSite.initials,
-      profileImageUrl: fileUrl(baseUrl, profile, profile.profileImage),
+      profileImageUrl: fileUrl(publicUrl, profile, profile.profileImage),
       contactEmail: profile.contactEmail || undefined,
       contactWhatsapp: profile.contactWhatsapp || undefined,
       socials: socials.map((s) => ({
@@ -199,7 +209,7 @@ export async function getSiteContent(): Promise<SiteContent> {
         label: s.label,
         icon: s.icon,
       })),
-      projectGroups: buildProjectGroups(baseUrl, projects),
+      projectGroups: buildProjectGroups(publicUrl, projects),
     };
   } catch (err) {
     console.error("[pocketbase] fetch failed:", err);
@@ -212,8 +222,8 @@ export async function getContactSettings(): Promise<{
   contactEmail?: string;
   contactWhatsapp?: string;
 }> {
-  const baseUrl = getBaseUrl();
-  if (!baseUrl) {
+  const serverUrl = getServerBaseUrl();
+  if (!serverUrl) {
     const fallback = staticFallback();
     return {
       contactEmail: fallback.contactEmail,
@@ -222,7 +232,7 @@ export async function getContactSettings(): Promise<{
   }
 
   try {
-    const profiles = await pbGetList<PbSiteProfile>(baseUrl, "site_profile");
+    const profiles = await pbGetList<PbSiteProfile>(serverUrl, "site_profile");
     const profile = profiles[0];
     return {
       contactEmail: profile?.contactEmail || undefined,
