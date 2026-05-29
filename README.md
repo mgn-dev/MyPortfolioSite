@@ -1,8 +1,18 @@
 This is a [Next.js](https://nextjs.org) portfolio site. Content is loaded from [PocketBase](https://pocketbase.io) when configured, with a static fallback in `src/content/site.ts`.
 
+## Environment variables
+
+Create `.env.local` in the project root (gitignored). Required for PocketBase content in dev and production:
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `NEXT_PUBLIC_POCKETBASE_URL` | Yes | Public PocketBase HTTPS URL (no trailing slash) |
+| `POCKETBASE_URL` | Production only | Internal HTTP URL for server-side fetches on Dokploy |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` | Optional | Contact form email (server-only) |
+
 ## PocketBase (Dokploy)
 
-1. Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_POCKETBASE_URL` to your PocketBase API base URL (HTTPS, no trailing slash).
+1. Create `.env.local` locally with `NEXT_PUBLIC_POCKETBASE_URL` set to your PocketBase API base URL (HTTPS, no trailing slash).
 2. Bootstrap collections and seed data (admin credentials only — not used by the app):
 
 ```bash
@@ -35,15 +45,14 @@ If the server uses a temporary/self-signed TLS certificate, add `POCKETBASE_INSE
 
 - Build: `npm run build` / Start: `npm run start` (or Nixpacks).
 - Environment:
-  - `NEXT_PUBLIC_POCKETBASE_URL` — public HTTPS URL for PocketBase (e.g. `https://cms.madebymgn.co.za`)
-  - `POCKETBASE_URL` — internal HTTP URL for server-side fetches (e.g. `http://myportfolioshowcase-pocketbase-svvnbg-pocketbase-1:8090` on Dokploy)
+  - `NEXT_PUBLIC_POCKETBASE_URL` — public HTTPS URL for PocketBase
+  - `POCKETBASE_URL` — internal HTTP URL for server-side fetches (Docker/Dokploy only)
   - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` — for the contact form
 
 **PocketBase custom domain (recommended)**
 
-- Add `cms.madebymgn.co.za` as a domain on the PocketBase compose service (HTTPS / Let's Encrypt).
-- In Cloudflare, add a proxied DNS record for `cms` pointing to your server (same as the main site).
-- Redeploy the PocketBase compose stack after adding the domain.
+- Add a subdomain (e.g. `cms.your-domain.com`) on the PocketBase compose service (HTTPS / Let's Encrypt).
+- Point DNS at your server, then redeploy the compose stack.
 
 **Contact form**
 
@@ -53,10 +62,12 @@ If the server uses a temporary/self-signed TLS certificate, add `POCKETBASE_INSE
 ## Getting Started
 
 ```bash
-cp .env.example .env.local
-# edit .env.local
-
 npm install
+
+# Create .env.local (not committed — see Environment variables above)
+# Example:
+#   NEXT_PUBLIC_POCKETBASE_URL=https://your-pocketbase.example.com
+
 npm run dev
 ```
 

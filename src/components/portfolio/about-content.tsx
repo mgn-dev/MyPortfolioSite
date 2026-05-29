@@ -5,7 +5,7 @@ export function AboutContent({ site }: { site: SiteContent }) {
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-semibold tracking-tight text-heading">
-        Hey, I&apos;m {site.name}.
+        {site.name}.
       </h1>
       <p className="text-muted">{site.role}</p>
       <BioMarkdown content={site.bio} />
