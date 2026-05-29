@@ -120,7 +120,7 @@ export function ProjectCard({
 
   return (
     <article
-      className={`flex min-w-0 flex-col border border-border-subtle bg-card ${revealClasses} ${reveal ? "transform-gpu" : ""}`}
+      className={`flex h-full min-h-0 flex-col border border-border-subtle bg-card ${revealClasses} ${reveal ? "transform-gpu" : ""}`}
       style={revealStyle}
     >
       <div
@@ -169,18 +169,26 @@ export function ProjectCard({
         )}
       </div>
 
-      <div className="space-y-3 p-4 sm:p-5">
-        <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
-          <h3 className="min-w-0 text-pretty text-lg font-semibold leading-snug tracking-tight text-heading sm:text-xl">
-            {project.title}
-          </h3>
-          <div className="w-fit shrink-0">
-            <InvolvementPill involvement={project.involvement} />
+      <div className="flex min-h-0 flex-1 flex-col p-4 sm:p-5">
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
+            <h3 className="min-w-0 text-pretty text-lg font-semibold leading-snug tracking-tight text-heading sm:text-xl">
+              {project.title}
+            </h3>
+            <div className="w-fit shrink-0">
+              <InvolvementPill involvement={project.involvement} />
+            </div>
           </div>
+
+          {project.description ? (
+            <p className="text-pretty text-xs leading-relaxed text-muted">
+              {project.description}
+            </p>
+          ) : null}
         </div>
 
-        <div className="flex items-center justify-between gap-3">
-          <p className="min-w-0 flex-1 text-pretty text-[13px] leading-snug text-muted">
+        <div className="mt-auto flex items-center justify-between gap-3 pt-5 sm:pt-6">
+          <p className="min-w-0 flex-1 text-pretty text-xs font-medium leading-snug tracking-wide text-zinc-500 dark:text-zinc-400">
             {project.techStack.join(" · ")}
           </p>
           {project.status !== "live" && project.githubUrl ? (
