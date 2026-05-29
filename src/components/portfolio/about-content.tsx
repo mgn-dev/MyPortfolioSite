@@ -1,4 +1,5 @@
 import type { SiteContent } from "@/lib/pocketbase";
+import { BioMarkdown } from "@/components/portfolio/bio-markdown";
 
 export function AboutContent({ site }: { site: SiteContent }) {
   return (
@@ -7,9 +8,7 @@ export function AboutContent({ site }: { site: SiteContent }) {
         Hey, I&apos;m {site.name}.
       </h1>
       <p className="text-muted">{site.role}</p>
-      <p className="max-w-prose text-base leading-relaxed text-muted">
-        {site.bio}
-      </p>
+      <BioMarkdown content={site.bio} />
     </div>
   );
 }

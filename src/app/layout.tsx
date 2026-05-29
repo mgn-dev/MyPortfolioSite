@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Montserrat } from "next/font/google";
 import { getSiteContent } from "@/lib/pocketbase";
+import { plainTextFromMarkdown } from "@/components/portfolio/bio-markdown";
 import "./globals.css";
 
 export const dynamic = "force-dynamic";
@@ -19,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const site = await getSiteContent();
   return {
     title: `${site.name} — Portfolio`,
-    description: site.bio,
+    description: plainTextFromMarkdown(site.bio),
   };
 }
 
