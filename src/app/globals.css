@@ -92,12 +92,18 @@ html.dark body {
  * fewer items—cards absorb free space instead of sharing it with ghost columns.
  */
 .projects-cards-bleed {
-  width: 100%;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
 }
 
 .projects-cards-grid {
   display: grid;
   min-width: 0;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: min(78rem, calc(100vw - 2rem));
+  margin-inline: auto;
+  padding-inline: 1rem;
   grid-template-columns: 1fr;
   gap: 1.5rem;
 }
@@ -115,16 +121,8 @@ html.dark body {
 }
 
 @media (min-width: 640px) {
-  .projects-cards-bleed {
-    width: 100vw;
-    margin-left: calc(50% - 50vw);
-  }
-
   .projects-cards-grid {
-    box-sizing: border-box;
-    width: 100%;
     max-width: min(78rem, calc(100vw - 3rem));
-    margin-inline: auto;
     padding-inline: 1.5rem;
     gap: 2rem;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
