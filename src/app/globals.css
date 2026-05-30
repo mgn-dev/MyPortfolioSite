@@ -91,9 +91,16 @@ html.dark body {
  * Uses auto-fit (not auto-fill) so extra column slots collapse when widening with
  * fewer items—cards absorb free space instead of sharing it with ghost columns.
  */
+/**
+ * Center in the viewport from any padded ancestor (main, nested accordion).
+ * translateX(-50%) is more reliable on mobile than margin calc(50% - 50vw).
+ */
 .projects-cards-bleed {
+  position: relative;
+  left: 50%;
   width: 100vw;
-  margin-left: calc(50% - 50vw);
+  max-width: 100vw;
+  transform: translateX(-50%);
 }
 
 .projects-cards-grid {
@@ -103,21 +110,15 @@ html.dark body {
   width: 100%;
   max-width: min(78rem, calc(100vw - 2rem));
   margin-inline: auto;
-  padding-inline: 1rem;
+  padding-inline: 0;
   grid-template-columns: 1fr;
   gap: 1.5rem;
 }
 
-/**
- * Match max width of one column when the grid hits its widest 3-across layout
- * (container max-width 78rem − 3rem horizontal padding − two 2rem gutters, ÷ 3).
- * Prevents oversized cards on ultra-wide screens or sparse rows; keeps within track on narrow widths.
- */
 .projects-cards-grid > article {
   box-sizing: border-box;
   width: 100%;
-  max-width: min(calc(71rem / 3), 100%);
-  justify-self: center;
+  max-width: 100%;
 }
 
 @media (min-width: 640px) {
@@ -126,5 +127,14 @@ html.dark body {
     padding-inline: 1.5rem;
     gap: 2rem;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+  }
+
+  /**
+   * Match max width of one column when the grid hits its widest 3-across layout
+   * (container max-width 78rem − 3rem horizontal padding − two 2rem gutters, ÷ 3).
+   */
+  .projects-cards-grid > article {
+    max-width: min(calc(71rem / 3), 100%);
+    justify-self: center;
   }
 }

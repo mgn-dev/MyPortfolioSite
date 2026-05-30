@@ -261,18 +261,30 @@ export function AccordionItem({
     };
   }, [open, reducedMotion, lockPanelOverflow, releasePanelOverflow]);
 
+  const nestedIndentClass = "pl-4 sm:pl-6";
+
   return (
     <div
       className={
         nested
-          ? "border-t border-border-subtle bg-transparent pl-4 first:border-t-0 sm:pl-6"
+          ? [
+              "border-t border-border-subtle bg-transparent first:border-t-0",
+              !wideContent && nestedIndentClass,
+            ]
+              .filter(Boolean)
+              .join(" ")
           : "border-b border-border-subtle bg-transparent"
       }
     >
       <button
         type="button"
         id={`${id}-trigger`}
-        className="flex w-full cursor-pointer touch-manipulation items-center justify-between py-5 text-left sm:py-6"
+        className={[
+          "flex w-full cursor-pointer touch-manipulation items-center justify-between py-5 text-left sm:py-6",
+          nested && wideContent && nestedIndentClass,
+        ]
+          .filter(Boolean)
+          .join(" ")}
         aria-expanded={open}
         aria-controls={id}
         onClick={toggle}

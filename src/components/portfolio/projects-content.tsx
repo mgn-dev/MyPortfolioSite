@@ -1,6 +1,9 @@
 "use client";
 
-import { AccordionItem, useAccordionPanel } from "@/components/portfolio/accordion-item";
+import {
+  AccordionItem,
+  useAccordionPanel,
+} from "@/components/portfolio/accordion-item";
 import { ProjectCard } from "@/components/portfolio/project-card";
 import type { SiteContent, SiteProjectGroup } from "@/lib/pocketbase";
 
@@ -21,7 +24,7 @@ function ProjectGroupCards({
 
   return (
     <div className="projects-cards-bleed">
-      <div className="projects-cards-grid">
+      <div className="projects-cards-grid !px-0 sm:!px-6">
         {projects.map((project, i) => (
           <ProjectCard
             key={project.title}
