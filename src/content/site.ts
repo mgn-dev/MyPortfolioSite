@@ -46,7 +46,7 @@ export const site = {
   name: "Mojalefa Gideon Nkwana",
   role: "Software | Cybersecurity",
   bio: "I craft calm, readable interfaces and ship thoughtful web experiences. Currently freelancing and exploring creative tooling.",
-  initials: "MN",
+  initials: "MG",
   socials: [
     { href: "https://twitter.com", label: "X / Twitter", icon: "twitter" },
     { href: "https://youtube.com", label: "YouTube", icon: "youtube" },
