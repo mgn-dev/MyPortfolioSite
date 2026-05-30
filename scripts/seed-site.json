@@ -8,10 +8,14 @@
     "contactWhatsapp": "+27123456789"
   },
   "socials": [
-    { "href": "https://twitter.com", "label": "X / Twitter", "icon": "twitter", "sort": 1 },
-    { "href": "https://youtube.com", "label": "YouTube", "icon": "youtube", "sort": 2 },
-    { "href": "https://linkedin.com", "label": "LinkedIn", "icon": "linkedin", "sort": 3 },
-    { "href": "https://github.com", "label": "GitHub", "icon": "github", "sort": 4 }
+    { "href": "https://twitter.com", "label": "X / Twitter", "icon": "twitter", "sort": 1, "enabled": true },
+    { "href": "https://youtube.com", "label": "YouTube", "icon": "youtube", "sort": 2, "enabled": true },
+    { "href": "https://linkedin.com", "label": "LinkedIn", "icon": "linkedin", "sort": 3, "enabled": true },
+    { "href": "https://github.com", "label": "GitHub", "icon": "github", "sort": 4, "enabled": true },
+    { "href": "https://instagram.com", "label": "Instagram", "icon": "instagram", "sort": 5, "enabled": true },
+    { "href": "https://tiktok.com", "label": "TikTok", "icon": "tiktok", "sort": 6, "enabled": true },
+    { "href": "https://facebook.com", "label": "Facebook", "icon": "facebook", "sort": 7, "enabled": true },
+    { "href": "https://reddit.com", "label": "Reddit", "icon": "reddit", "sort": 8, "enabled": true }
   ],
   "projects": [
     {

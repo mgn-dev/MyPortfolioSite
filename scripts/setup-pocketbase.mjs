@@ -8,11 +8,39 @@
  *   npm run setup:pocketbase
  */
 
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const ROOT = join(__dirname, "..");
+
+/** Load KEY=value pairs from .env files without overwriting existing env. */
+function loadEnvFiles(...paths) {
+  for (const filePath of paths) {
+    if (!existsSync(filePath)) continue;
+    for (const line of readFileSync(filePath, "utf8").split("\n")) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith("#")) continue;
+      const eq = trimmed.indexOf("=");
+      if (eq === -1) continue;
+      const key = trimmed.slice(0, eq).trim();
+      let value = trimmed.slice(eq + 1).trim();
+      if (
+        (value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith("'") && value.endsWith("'"))
+      ) {
+        value = value.slice(1, -1);
+      }
+      if (process.env[key] === undefined) process.env[key] = value;
+    }
+  }
+}
+
+loadEnvFiles(
+  join(ROOT, ".env.local"),
+  join(ROOT, ".env.pocketbase"),
+);
 
 const PB_URL = (process.env.POCKETBASE_URL || process.env.NEXT_PUBLIC_POCKETBASE_URL || "")
   .replace(/\/$/, "");
@@ -106,7 +134,16 @@ const PUBLIC_RULES = {
   deleteRule: null,
 };
 
-const ICON_VALUES = ["twitter", "youtube", "linkedin", "github", "instagram"];
+const ICON_VALUES = [
+  "twitter",
+  "youtube",
+  "linkedin",
+  "github",
+  "instagram",
+  "tiktok",
+  "facebook",
+  "reddit",
+];
 const STATUS_VALUES = ["live", "staging"];
 const INVOLVEMENT_VALUES = ["gen-ai", "human", "both"];
 const CATEGORY_VALUES = ["software-engineering", "cybersecurity"];
@@ -147,6 +184,7 @@ const COLLECTIONS = [
         values: ICON_VALUES,
       },
       { name: "sort", type: "number", required: false },
+      { name: "enabled", type: "bool", required: false },
     ],
     ...PUBLIC_RULES,
   },
@@ -274,19 +312,27 @@ async function seedSiteProfile(token) {
 
 async function seedSocials(token) {
   const existing = await listRecords(token, "socials");
-  if (existing.length > 0) {
-    console.log(`  · socials already seeded (${existing.length} records)`);
-    return;
-  }
+  const byIcon = new Map(existing.map((row) => [row.icon, row]));
 
+  let created = 0;
   for (const row of seed.socials) {
+    if (byIcon.has(row.icon)) continue;
+
     await pbFetch("/api/collections/socials/records", {
       method: "POST",
       headers: { Authorization: token },
       body: JSON.stringify(row),
     });
+    created += 1;
   }
-  console.log(`  + seeded ${seed.socials.length} socials`);
+
+  if (created > 0) {
+    console.log(`  + added ${created} social(s)`);
+  } else if (existing.length === 0) {
+    console.log(`  + seeded ${seed.socials.length} socials`);
+  } else {
+    console.log(`  · socials up to date (${existing.length} records)`);
+  }
 }
 
 async function seedProjects(token) {

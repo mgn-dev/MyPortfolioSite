@@ -54,6 +54,8 @@ type PbSocial = {
   label: string;
   icon: SiteSocial["icon"];
   sort?: number;
+  /** When false, the link is hidden on the site. Omitted or true = visible. */
+  enabled?: boolean;
 };
 
 type PbProject = {
@@ -202,11 +204,13 @@ export async function getSiteContent(): Promise<SiteContent> {
       profileImageUrl: fileUrl(publicUrl, profile, profile.profileImage),
       contactEmail: profile.contactEmail || undefined,
       contactWhatsapp: profile.contactWhatsapp || undefined,
-      socials: socials.map((s) => ({
-        href: s.href,
-        label: s.label,
-        icon: s.icon,
-      })),
+      socials: socials
+        .filter((s) => s.enabled !== false)
+        .map((s) => ({
+          href: s.href,
+          label: s.label,
+          icon: s.icon,
+        })),
       projectGroups: buildProjectGroups(publicUrl, projects),
     };
   } catch (err) {

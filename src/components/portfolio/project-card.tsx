@@ -199,10 +199,10 @@ export function ProjectCard({
               target={project.githubUrl.startsWith("http") ? "_blank" : undefined}
               rel={project.githubUrl.startsWith("http") ? "noopener noreferrer" : undefined}
             >
-              <GithubIcon className="size-6" />
+              <GithubIcon className="size-6.5" />
             </a>
           ) : (
-            <span className="size-6 shrink-0" aria-hidden />
+            <span className="size-6.5 shrink-0" aria-hidden />
           )}
         </div>
       </div>

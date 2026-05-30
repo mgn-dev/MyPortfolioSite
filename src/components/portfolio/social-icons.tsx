@@ -3,9 +3,7 @@ import type { SocialIconName } from "@/content/site";
 
 function iconProps(className?: string): SVGProps<SVGSVGElement> {
   return {
-    className,
-    width: 24,
-    height: 24,
+    className: className ?? "size-6",
     viewBox: "0 0 24 24",
     fill: "currentColor",
     "aria-hidden": true,
@@ -39,7 +37,7 @@ function LinkedinIcon({ className }: { className?: string }) {
 
 export function GithubIcon({ className }: { className?: string }) {
   return (
-    <svg {...iconProps(className)}>
+    <svg {...iconProps(className)} viewBox="1 1 22 22">
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -49,10 +47,50 @@ export function GithubIcon({ className }: { className?: string }) {
   );
 }
 
+/** Rounded square + lens + flash dot (stroke outline reads clearly at 20px). */
 function InstagramIcon({ className }: { className?: string }) {
   return (
+    <svg
+      className={className ?? "size-6"}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+      <circle cx="12" cy="12" r="4.5" />
+      <circle cx="17.5" cy="6.5" r="1.25" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+function TiktokIcon({ className }: { className?: string }) {
+  return (
     <svg {...iconProps(className)}>
-      <path d="M12 7.2c-2.65 0-4.8 2.15-4.8 4.8s2.15 4.8 4.8 4.8 4.8-2.15 4.8-4.8-2.15-4.8-4.8-4.8zm0 7.9c-1.71 0-3.1-1.39-3.1-3.1S10.29 8.9 12 8.9s3.1 1.39 3.1 3.1-1.39 3.1-3.1 3.1zm6.11-8.04h-2.22c.15.77.24 1.56.24 2.38 0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8c.82 0 1.61.09 2.38.24V3.22A9.93 9.93 0 0012 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10c0-1.07-.17-2.1-.49-3.06zm2.49-3.06h-3.18v3.18h3.18V4z" />
+      <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z" />
+    </svg>
+  );
+}
+
+function FacebookIcon({ className }: { className?: string }) {
+  return (
+    <svg {...iconProps(className)}>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
+      />
+    </svg>
+  );
+}
+
+function RedditIcon({ className }: { className?: string }) {
+  return (
+    <svg {...iconProps(className)}>
+      <path d="M17.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 01-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.967 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 01.042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.042-.521A1.748 1.748 0 014.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 01.14-.197.35.35 0 01.238-.042l2.906.617a1.214 1.214 0 011.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 00-.231.094.33.33 0 000 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 000-.463.33.33 0 00-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 00-.232-.095z" />
     </svg>
   );
 }
@@ -63,6 +101,9 @@ const icons: Record<SocialIconName, ComponentType<{ className?: string }>> = {
   linkedin: LinkedinIcon,
   github: GithubIcon,
   instagram: InstagramIcon,
+  tiktok: TiktokIcon,
+  facebook: FacebookIcon,
+  reddit: RedditIcon,
 };
 
 export function SocialIcon({
@@ -73,5 +114,6 @@ export function SocialIcon({
   className?: string;
 }) {
   const Icon = icons[name];
+  if (!Icon) return null;
   return <Icon className={className} />;
 }

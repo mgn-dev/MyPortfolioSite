@@ -78,7 +78,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | Collection     | Purpose |
 |----------------|---------|
 | `site_profile` | Name, role, bio, initials, profile image, contact email & WhatsApp |
-| `socials`      | Social links (sort order) |
+| `socials`      | Social links (`sort` order, `enabled` toggle to show/hide) |
 | `projects`     | Project cards (`category`: `software-engineering` or `cybersecurity`) |
 
 ## Learn More

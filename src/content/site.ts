@@ -3,7 +3,10 @@ export type SocialIconName =
   | "youtube"
   | "linkedin"
   | "github"
-  | "instagram";
+  | "instagram"
+  | "tiktok"
+  | "facebook"
+  | "reddit";
 
 export type SiteSocial = {
   href: string;
@@ -46,6 +49,10 @@ export const site = {
     { href: "https://youtube.com", label: "YouTube", icon: "youtube" },
     { href: "https://linkedin.com", label: "LinkedIn", icon: "linkedin" },
     { href: "https://github.com", label: "GitHub", icon: "github" },
+    { href: "https://instagram.com", label: "Instagram", icon: "instagram" },
+    { href: "https://tiktok.com", label: "TikTok", icon: "tiktok" },
+    { href: "https://facebook.com", label: "Facebook", icon: "facebook" },
+    { href: "https://reddit.com", label: "Reddit", icon: "reddit" },
   ] satisfies SiteSocial[],
   projectGroups: [
     {

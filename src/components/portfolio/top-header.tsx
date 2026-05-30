@@ -1,7 +1,43 @@
 import Image from "next/image";
 import { Camera } from "lucide-react";
 import { SocialIcon } from "@/components/portfolio/social-icons";
-import type { SiteContent } from "@/lib/pocketbase";
+import type { SiteContent, SiteSocial } from "@/lib/pocketbase";
+
+const socialLinkClassName =
+  "inline-flex size-11 shrink-0 touch-manipulation items-center justify-center rounded-full border border-transparent text-heading transition-colors active:bg-input hover:border-border-subtle hover:bg-input sm:size-10";
+
+function socialIconSize(icon: SiteSocial["icon"]): string {
+  if (icon === "reddit") return "size-6";
+  if (icon === "github") return "size-5.5";
+  if (icon === "twitter") return "size-4.5";
+  return "size-5";
+}
+
+function SocialLink({ social }: { social: SiteSocial }) {
+  return (
+    <a
+      href={social.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={social.label}
+      className={socialLinkClassName}
+    >
+      <SocialIcon
+        name={social.icon}
+        className={socialIconSize(social.icon)}
+      />
+    </a>
+  );
+}
+
+function socialRows(socials: SiteSocial[]): SiteSocial[][] {
+  const count = socials.length;
+  if (count > 4 && count % 2 === 0) {
+    const half = count / 2;
+    return [socials.slice(0, half), socials.slice(half)];
+  }
+  return [socials];
+}
 
 function ProfileAvatar({ site }: { site: SiteContent }) {
   const className =
@@ -44,6 +80,9 @@ function ProfileAvatar({ site }: { site: SiteContent }) {
 }
 
 export function TopHeader({ site }: { site: SiteContent }) {
+  const rows = socialRows(site.socials);
+  const twoRows = rows.length === 2;
+
   return (
     <header className="flex flex-col gap-4 pb-2 pt-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-1 sm:pt-5">
       <div className="flex min-w-0 items-center gap-3 sm:gap-4">
@@ -60,23 +99,22 @@ export function TopHeader({ site }: { site: SiteContent }) {
 
       <nav
         aria-label="Social links"
-        className="flex w-full min-w-0 items-center justify-center gap-0.5 sm:w-auto sm:justify-end sm:gap-1.5 md:gap-2"
+        className={
+          twoRows
+            ? "flex w-full min-w-0 flex-col items-start gap-0.5 sm:w-auto sm:items-end sm:gap-1"
+            : "hide-scrollbar flex w-full min-w-0 flex-nowrap items-center justify-start gap-0.5 overflow-x-auto sm:w-auto sm:justify-end sm:gap-1.5 md:gap-2"
+        }
       >
-        {site.socials
-          .slice(0, 5)
-          .reverse()
-          .map((s) => (
-            <a
-              key={s.href}
-              href={s.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={s.label}
-              className="inline-flex size-11 touch-manipulation items-center justify-center rounded-full border border-transparent text-heading transition-colors active:bg-input hover:border-border-subtle hover:bg-input sm:size-10"
-            >
-              <SocialIcon name={s.icon} className="size-5 sm:size-5" />
-            </a>
-          ))}
+        {rows.map((row, rowIndex) => (
+          <div
+            key={rowIndex}
+            className="flex items-center justify-start gap-0.5 sm:justify-end sm:gap-1.5 md:gap-2"
+          >
+            {row.map((s) => (
+              <SocialLink key={`${s.icon}-${s.href}`} social={s} />
+            ))}
+          </div>
+        ))}
       </nav>
     </header>
   );
