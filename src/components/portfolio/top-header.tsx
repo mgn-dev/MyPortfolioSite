@@ -7,10 +7,11 @@ const socialLinkClassName =
   "inline-flex size-11 shrink-0 touch-manipulation items-center justify-center rounded-full border border-transparent text-heading transition-colors active:bg-input hover:border-border-subtle hover:bg-input sm:size-10";
 
 function socialIconSize(icon: SiteSocial["icon"]): string {
-  if (icon === "reddit") return "size-6";
-  if (icon === "github") return "size-5.5";
-  if (icon === "twitter") return "size-4.5";
-  return "size-5";
+  if (icon === "reddit") return "size-5.5";
+  if (icon === "github") return "size-5";
+  if (icon === "facebook" || icon === "linkedin") return "size-5";
+  if (icon === "twitter") return "size-4";
+  return "size-4.5";
 }
 
 function SocialLink({ social }: { social: SiteSocial }) {
