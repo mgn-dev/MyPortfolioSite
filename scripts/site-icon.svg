@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180" fill="none">
+  <circle cx="90" cy="90" r="88.5" fill="#f0f0f0" stroke="#e8e8e8" stroke-width="1.5" />
+  <text
+    x="90"
+    y="91"
+    text-anchor="middle"
+    dominant-baseline="middle"
+    fill="#000000"
+    font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    font-size="54"
+    font-weight="600"
+    letter-spacing="2.5"
+  >MN</text>
+</svg>
