@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Montserrat } from "next/font/google";
+import { siteDisplayTitle } from "@/content/site";
 import { getSiteContent } from "@/lib/pocketbase";
 import { plainTextFromMarkdown } from "@/components/portfolio/bio-markdown";
 import "./globals.css";
@@ -19,7 +20,7 @@ const jetbrainsMono = JetBrains_Mono({
 export async function generateMetadata(): Promise<Metadata> {
   const site = await getSiteContent();
   return {
-    title: `${site.name} — Portfolio`,
+    title: siteDisplayTitle,
     description: plainTextFromMarkdown(site.bio),
   };
 }

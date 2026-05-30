@@ -24,6 +24,8 @@ npm run setup:pocketbase
 
 If the server uses a temporary/self-signed TLS certificate, add `POCKETBASE_INSECURE_SKIP_TLS=true` for the setup command only.
 
+The setup script updates collection schemas and only **creates** missing seed records. It does **not** overwrite an existing `site_profile` or change socials/projects that are already there.
+
 3. Edit content in the PocketBase admin UI (`/_/`) under **site_profile**, **socials**, and **projects**.
 4. Upload **profileImage** on `site_profile` and optional **image** on each project.
 

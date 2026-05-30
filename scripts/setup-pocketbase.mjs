@@ -290,15 +290,9 @@ async function listRecords(token, collection, filter = "") {
 
 async function seedSiteProfile(token) {
   const existing = await listRecords(token, "site_profile");
-  const body = seed.site_profile;
 
   if (existing.length > 0) {
-    console.log("  ↻ update site_profile");
-    await pbFetch(`/api/collections/site_profile/records/${existing[0].id}`, {
-      method: "PATCH",
-      headers: { Authorization: token },
-      body: JSON.stringify(body),
-    });
+    console.log("  · site_profile already exists (left unchanged)");
     return;
   }
 
@@ -306,7 +300,7 @@ async function seedSiteProfile(token) {
   await pbFetch("/api/collections/site_profile/records", {
     method: "POST",
     headers: { Authorization: token },
-    body: JSON.stringify(body),
+    body: JSON.stringify(seed.site_profile),
   });
 }
 

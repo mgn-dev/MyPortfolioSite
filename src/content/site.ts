@@ -39,6 +39,9 @@ export type SiteProjectGroup = {
   projects: SiteProject[];
 };
 
+/** Browser tab title (code only, not PocketBase). */
+export const siteDisplayTitle = "MADE BY MGN";
+
 export const site = {
   name: "Mojalefa Gideon Nkwana",
   role: "Software | Cybersecurity",
