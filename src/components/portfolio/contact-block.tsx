@@ -1,11 +1,16 @@
 "use client";
 
+import { Mail } from "lucide-react";
 import { FormEvent, useState } from "react";
+import { SocialsList } from "@/components/portfolio/socials-list";
+import { WhatsAppIcon } from "@/components/portfolio/social-icons";
+import type { SiteSocial } from "@/lib/pocketbase";
 import { whatsappUrl } from "@/lib/whatsapp";
 
 type ContactBlockProps = {
   contactEmail?: string;
   contactWhatsapp?: string;
+  socials?: SiteSocial[];
 };
 
 type FormStatus = "idle" | "sending" | "success" | "error";
@@ -13,6 +18,7 @@ type FormStatus = "idle" | "sending" | "success" | "error";
 export function ContactBlock({
   contactEmail,
   contactWhatsapp,
+  socials = [],
 }: ContactBlockProps) {
   const [status, setStatus] = useState<FormStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -58,35 +64,47 @@ export function ContactBlock({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       <p className="text-sm text-muted">
         Have a question or a project in mind? Say hello.
       </p>
 
+      <SocialsList socials={socials} />
+
       {(contactEmail || waLink) && (
-        <ul className="flex flex-col gap-2 text-sm">
+        <ul className="mb-20 flex flex-col gap-4 text-sm">
           {contactEmail && (
-            <li>
-              <span className="text-muted">Email: </span>
-              <a
-                href={`mailto:${contactEmail}`}
-                className="font-medium text-heading underline-offset-2 hover:underline"
-              >
-                {contactEmail}
-              </a>
+            <li className="flex items-center gap-2.5">
+              <Mail
+                className="size-5 shrink-0 text-heading"
+                strokeWidth={1.75}
+                aria-hidden
+              />
+              <span>
+                <span className="text-muted">Email: </span>
+                <a
+                  href={`mailto:${contactEmail}`}
+                  className="font-medium text-heading underline-offset-2 hover:underline"
+                >
+                  {contactEmail}
+                </a>
+              </span>
             </li>
           )}
           {waLink && contactWhatsapp && (
-            <li>
-              <span className="text-muted">WhatsApp: </span>
-              <a
-                href={waLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-medium text-heading underline-offset-2 hover:underline"
-              >
-                {contactWhatsapp}
-              </a>
+            <li className="flex items-center gap-2.5">
+              <WhatsAppIcon className="size-5 shrink-0 text-heading" />
+              <span>
+                <span className="text-muted">WhatsApp: </span>
+                <a
+                  href={waLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-heading underline-offset-2 hover:underline"
+                >
+                  {contactWhatsapp}
+                </a>
+              </span>
             </li>
           )}
         </ul>

@@ -72,16 +72,6 @@ html.dark body {
   background-size: 22px 22px;
 }
 
-/** Horizontal social strip on small screens */
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
 /**
  * Break out of max-w-2xl main, then center a grid in the viewport.
  * Outer strip spans the viewport; inner grid is margin-auto centered.

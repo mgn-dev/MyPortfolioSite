@@ -37,6 +37,7 @@ export default async function Home() {
             <ContactBlock
               contactEmail={site.contactEmail}
               contactWhatsapp={site.contactWhatsapp}
+              socials={site.socials}
             />
           </AccordionItem>
         </AccordionStack>
